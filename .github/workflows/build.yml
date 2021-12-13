@@ -9,7 +9,9 @@ on:
       - main
 
 env:
-  DOCKER_REPO: jonoh/cloudflared
+  DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+  DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
+  DOCKER_IMAGE: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_REPO }}
 
 jobs:
   main:
@@ -30,6 +32,7 @@ jobs:
         uses: docker/login-action@v1
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
+          registry: ${{ env.DOCKER_REGISTRY }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
@@ -47,11 +50,11 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           push: ${{ github.ref == 'refs/heads/main' }}
-          tags: "${{ env.DOCKER_REPO }}:${{ steps.get_version.outputs.CF_VERSION }},${{ env.DOCKER_REPO }}:latest"
+          tags: "${{ env.DOCKER_IMAGE }}:${{ steps.get_version.outputs.CF_VERSION }},${{ env.DOCKER_IMAGE }}:latest"
 
       - name: Update repo description
         uses: peter-evans/dockerhub-description@v2
-        if: ${{ github.ref == 'refs/heads/main' }}
+        if: (github.ref == 'refs/heads/main') && (env.DOCKER_REGISTRY == 'docker.io')
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
