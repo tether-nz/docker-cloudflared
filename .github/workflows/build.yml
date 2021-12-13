@@ -10,7 +10,7 @@ on:
 
 env:
   DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-  DOCKER_REPO: ${{ env.DOCKER_REPO }}
+  DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
   DOCKER_IMAGE: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_REPO }}
 
 jobs:
